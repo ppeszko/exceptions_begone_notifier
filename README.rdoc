@@ -1,4 +1,4 @@
-=ExceptionsBegoneIdentifier
+=ExceptionsBegoneNotifier
 
 This gem catch all exceptions from a Rails application and send them
 to a ExceptionsBegone server. Actually it doesn't has to be an exception. 
