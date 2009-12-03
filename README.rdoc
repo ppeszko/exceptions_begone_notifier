@@ -1,0 +1,96 @@
+=ExceptionsBegoneIdentifier (Version 0.2.0)
+
+This gem catch all exceptions from a Rails application and send them
+to a ExceptionsBegone server. Actually it doesn't has to be an exception. 
+You can easily send *any* *kind* *of* *notification* and let the server aggregate it for you. It could be for example
+a cron or nagios message.
+
+This project is currently under development, however it is stable enough to use
+it in production environment. 
+
+==Prerequisites
+
+This gem is <tt>require 'rubygems'</tt> free. See {here}[http://tomayko.com/writings/require-rubygems-antipattern] for explanation.
+If you want to use rubygems as a gems source do <tt>export RUBYOPT="rubygems"</tt>
+
+This gem send informations to an {Exceptions Begone Server}[http://github.com/xing/exceptions_begone]. 
+See the README for the installation guide.
+
+The gem relies that the Rails.logger responds to <tt>error</tt> method (which is a default behavior in Rails applications).
+
+==Downloading gem
+
+<tt>gem sources -a http://gemcutter.org</tt>
+
+or if you have the gemcutter gem installed:
+
+<tt>gem install exceptions_begone_notifier</tt>
+
+==Enabling functionality
+
+Add <tt>require "exceptions_begone_notifier"</tt> in the proper place (e.g. in <tt>config/environment.rb</tt>).
+
+To activate the gem add following lines to you application configuration file (e.g. <tt>config/environments/production.rb</tt>).
+
+  ExceptionsBegone::Catcher.catch_exceptions do |catcher|
+    catcher.host = "exceptions_begone_server"
+  end
+
+Sender expects following parameters for configuration:
+* <tt>project</tt>: name of project (this project has to exist on ExceptionsBegone server)
+* <tt>host</tt>: host name of the ExceptionsBegone server
+* <tt>port</tt>: same as above
+* <tt>open_timeout</tt>: http timeout (in sec)
+* <tt>read_timeout</tt>: same as above
+
+==Usage
+
+After activation all exceptions will be send via HTTP POST (JSON) to the ExceptionsBegone server.
+
+If you want to send a notification use:
+
+<tt>ExceptionsBegone::Sender.send_YOUR_CATEGORY_GOES_HERE({:identifier => "NotificationName", :payload => {:anything => "you want"}})</tt>
+
+or
+
+<tt>ExceptionsBegone::Sender.send_YOUR_CATEGORY_GOES_HERE({:identifier => "NotificationName", :payload => {:anything => "you want"}}, :host => "new host address", :port => "new port")</tt>
+
+if want to override the settings from the ExceptionsBegone::Catcher. As you can see the category of your notification (e.g. nagios_message or warning)
+is taken from the method name: "send_ *category*()".
+
+==Throttling traffic between servers
+
+If you really need to throttle number of send exceptions you will need a caching layer. You could write your own or use
+following implementation ExceptionsBegone::Cache and enable it with:
+
+<tt>ExceptionsBegone::Sender.extend ExceptionsBegone::Cache</tt>
+
+==Authors
+
+{Patryk Peszko}[http://github.com/ppeszko]
+
+==Contributors
+
+==License
+
+The MIT License
+ 
+Copyright (c) 2009 {XING AG}[http://www.xing.com/]
+ 
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+ 
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+ 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
