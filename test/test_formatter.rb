@@ -58,4 +58,14 @@ class TestFormattingExceptionsData < Test::Unit::TestCase
     assert_equal(@exception.backtrace, payload[:backtrace])
     assert_equal(ENV.to_hash, payload[:environment])
   end
+  
+  def test_should_filter_parameters_as_specified
+    parameters = {:login => "login", :password => "secret"}
+    ExceptionsBegone::ConnectionConfigurator.global_connection.filters = [:password]
+    request = stub_everything(:parameters => parameters)
+    
+    filtered_parameters = ExceptionsBegone::Formatter.format_exception_data(Exception.new, ActionController::Base.new, request)[:payload][:parameters]
+    assert_equal parameters[:login], filtered_parameters[:login]
+    assert_not_equal parameters[:password], filtered_parameters[:password]
+  end
 end

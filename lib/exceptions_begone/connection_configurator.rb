@@ -5,7 +5,8 @@ module ExceptionsBegone
       :port => 80,
       :open_timeout => 5,
       :read_timeout => 5,
-      :host => "127.0.0.1"
+      :host => "127.0.0.1",
+      :filters => []
     }
     
     class << self

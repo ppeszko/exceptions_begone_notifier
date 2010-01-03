@@ -11,7 +11,7 @@ module ExceptionsBegone
       def format_exception_data(exception, controller, request)
         { :identifier => generate_identifier(controller, exception),
           :payload => {
-            :parameters => request.parameters, 
+            :parameters => filter_parameters(request.parameters), 
             :url => request.url,
             :ip => request.ip,
             :request_environment => request.env,
@@ -20,6 +20,14 @@ module ExceptionsBegone
             :backtrace => exception.backtrace 
           }
         }
+      end
+      
+      def filter_parameters(parameters = {})
+        parameters = parameters.dup
+        ConnectionConfigurator.global_connection.filters.each do |filter|
+          parameters[filter] = "[FILTERED]"
+        end
+        parameters
       end
       
       def generate_identifier(controller, exception)
